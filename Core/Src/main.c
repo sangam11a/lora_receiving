@@ -41,8 +41,8 @@
 //#define CRC_TYPE                (0x01) // crc disabled
 //#define WHITENING               (0x00) // whitening disabled
 
-#define FREQ_401_MHZ          	(401375000)	//  (401375000) //dlink
-#define FREQ_402_MHZ		  	(402375000)	//	(402375000) //UPLINK
+#define FREQ_401_MHZ          	(421375000)	//  (401375000) //dlink
+#define FREQ_402_MHZ		  	(422375000)	//	(402375000) //UPLINK
 
 #define PA_DUTY_CYCLE           (0x04)
 #define HP_MAX                  (0x07)
@@ -81,10 +81,10 @@ void DioIrqHndlr(RadioIrqMasks_t radioIrq) {
 		break;
 	case IRQ_RX_DONE:
 
-		myprintf("DATA RECEIVED: \n");
+//		myprintf("DATA RECEIVED: \n");
 		SUBGRF_GetPayload(rx_buf, &p_len, PAYLOAD_LENGTH);
 		myprintf("%s",rx_buf);
-		HAL_UART_Transmit_IT(&huart1, rx_buf, CMD_LEN);
+//		HAL_UART_Transmit_IT(&huart1, rx_buf, CMD_LEN);
 
 		SUBGRF_SetSwitch(1, RFSWITCH_RX);
 		SUBGRF_SetRxBoosted(0xFFFFFF);
@@ -95,14 +95,14 @@ void DioIrqHndlr(RadioIrqMasks_t radioIrq) {
 	case IRQ_TX_DONE:
 
 
-		memset((char*) tx_buf, '\0', PAYLOAD_LENGTH);
+//		memset((char*) tx_buf, '\0', PAYLOAD_LENGTH);
 
 		//            myprintf("%s",tx_buf);
 		SUBGRF_SetSwitch(1, RFSWITCH_RX); /*Set RF switch*/
 		SUBGRF_SetRxBoosted(0xFFFFFF);
 		//            myprintf("\n\rGoing RX_Mode\n\r");
 		SUBGRF_SetRfFrequency(FREQ_402_MHZ);
-		memset(rx_buf, '\0', CMD_LEN); //Clear RX_BUFFER
+//		memset(rx_buf, '\0', CMD_LEN); //Clear RX_BUFFER
 
 		break;
 	case IRQ_PREAMBLE_DETECTED:
@@ -227,24 +227,24 @@ int main(void)
 			IRQ_RADIO_NONE);
 
 
-	myprintf("########## MUNAL SATELLITE COM: BEGIN ##########\r\n");
-
-	myprintf("########## COMMUNICATION PARAMETERS:  ##########\r\n");
-	myprintf("Modulation  LoRa PACKET	./\r\n");
-	myprintf("FREQUENCY MODS: UPLINK FREQ: %lu\r\n DOWNLINK FREQ: %lu\r\n",
-	FREQ_402_MHZ, FREQ_401_MHZ);
-	myprintf(
-			"POWER CONFIG: PA_DUTY_CYCLE : %x, HP_MAX: %x,PA_SEL : %x \n\r POWER TX: %u dBm\n\r",
-			PA_DUTY_CYCLE, HP_MAX, PA_SEL, POWER);
-	myprintf("RECEVING BANDWIDTH: 	%d\n\r", mod_params.Params.LoRa.Bandwidth);
-	myprintf("Packet Type 			%d\n\r  ", pkt_params.PacketType);
-	myprintf("PayloadLength 			%d\n\r  ", pkt_params.Params.LoRa.PayloadLength);
-	myprintf("PreambleLength 		%d\n\r", pkt_params.Params.LoRa.PreambleLength);
-	myprintf("PreambleMinDetect		%d\n\r",
-			pkt_params.Params.Gfsk.PreambleMinDetect);
-	myprintf("HeaderType 			%d\n\r", pkt_params.Params.LoRa.HeaderType);
-	myprintf("__________________________________________________\r\n");
-	myprintf("________________Waiting OBC DATA____________\r\n");
+//	myprintf("########## MUNAL SATELLITE COM: BEGIN ##########\r\n");
+//
+//	myprintf("########## COMMUNICATION PARAMETERS:  ##########\r\n");
+//	myprintf("Modulation  LoRa PACKET	./\r\n");
+//	myprintf("FREQUENCY MODS: UPLINK FREQ: %lu\r\n DOWNLINK FREQ: %lu\r\n",
+//	FREQ_402_MHZ, FREQ_401_MHZ);
+//	myprintf(
+//			"POWER CONFIG: PA_DUTY_CYCLE : %x, HP_MAX: %x,PA_SEL : %x \n\r POWER TX: %u dBm\n\r",
+//			PA_DUTY_CYCLE, HP_MAX, PA_SEL, POWER);
+//	myprintf("RECEVING BANDWIDTH: 	%d\n\r", mod_params.Params.LoRa.Bandwidth);
+//	myprintf("Packet Type 			%d\n\r  ", pkt_params.PacketType);
+//	myprintf("PayloadLength 			%d\n\r  ", pkt_params.Params.LoRa.PayloadLength);
+//	myprintf("PreambleLength 		%d\n\r", pkt_params.Params.LoRa.PreambleLength);
+//	myprintf("PreambleMinDetect		%d\n\r",
+//			pkt_params.Params.Gfsk.PreambleMinDetect);
+//	myprintf("HeaderType 			%d\n\r", pkt_params.Params.LoRa.HeaderType);
+//	myprintf("__________________________________________________\r\n");
+//	myprintf("________________Waiting OBC DATA____________\r\n");
 
 	SUBGRF_SetSwitch(RFO_HP, RFSWITCH_RX); /*Set RF switch*/
 	SUBGRF_SetRxBoosted(0xFFFFFF);
@@ -313,11 +313,13 @@ void SystemClock_Config(void)
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart){
 	HAL_UART_Transmit_IT(&huart1,"received",8);
 	SUBGRF_SetSwitch(1, RFSWITCH_TX);
-	SUBGRF_SendPayload("lorada", 6, 0);
+//	strcpy(tx_buf,"Tx callback");
+//	SUBGRF_SendPayload("lorada", 6, 0);
 	SUBGRF_SendPayload(tx_buf, sizeof(tx_buf), 0);
 	SUBGRF_SetSwitch(1, RFSWITCH_RX);
 	HAL_UART_Receive_IT(&huart1,tx_buf,sizeof(tx_buf));
 }
+
 
 /* USER CODE END 4 */
 
